@@ -1,0 +1,8 @@
+{
+  "bap": "0.1",
+  "id": "m1",
+  "kind": "event",
+  "type": "lifecycle.ready",
+  "source": "component",
+  "target": "host"
+}

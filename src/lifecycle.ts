@@ -1,0 +1,4 @@
+import type { LifecycleState, Role } from "./types.js";
+export type LifecycleAction = "initialize" | "ready" | "start" | "pause" | "resume" | "stop" | "destroy";
+const transitions: Record<LifecycleState, Partial<Record<LifecycleAction, LifecycleState>>> = { created: { initialize: "initializing", destroy: "destroyed" }, initializing: { ready: "ready", destroy: "destroyed" }, ready: { start: "running", destroy: "destroyed" }, running: { pause: "paused", stop: "stopped", destroy: "destroyed" }, paused: { resume: "running", stop: "stopped", destroy: "destroyed" }, stopped: { start: "running", destroy: "destroyed" }, destroyed: {} };
+export class LifecycleMachine { public state: LifecycleState = "created"; constructor(public readonly role: Role) {} apply(action: LifecycleAction): LifecycleState { const next = transitions[this.state][action]; if (!next) throw new Error(`${this.role}: cannot ${action} from ${this.state}`); this.state = next; return this.state; } }

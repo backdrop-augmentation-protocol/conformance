@@ -1,0 +1,8 @@
+{
+  "bap": "0.1",
+  "id": "example.clock",
+  "name": "Clock",
+  "version": "0.1.0",
+  "role": "component",
+  "entry": { "standalone": "index.html", "embedded": "index.html" }
+}

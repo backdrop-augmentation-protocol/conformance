@@ -1,0 +1,7 @@
+{
+  "bap": "0.1",
+  "id": "example.invalid",
+  "name": "Invalid",
+  "version": "0.1.0",
+  "role": "plugin"
+}
