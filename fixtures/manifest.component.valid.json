@@ -1,8 +1,10 @@
 {
-  "bap": "0.1",
+  "protocol": {"name": "bap", "version": "0.1.0", "profile": "core"},
   "id": "example.clock",
   "name": "Clock",
   "version": "0.1.0",
   "role": "component",
-  "entry": { "standalone": "index.html", "embedded": "index.html" }
+  "capabilities": [],
+  "modes": ["standalone", "embedded"],
+  "entrypoints": {"default": "index.html", "standalone": "index.html", "embedded": "index.html"}
 }

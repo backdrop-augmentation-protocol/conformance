@@ -1,7 +1,9 @@
 {
-  "bap": "0.1",
+  "protocol": {"name": "bap", "version": "0.1.0", "profile": "core"},
   "id": "example.invalid",
   "name": "Invalid",
   "version": "0.1.0",
-  "role": "plugin"
+  "role": "plugin",
+  "capabilities": [],
+  "entrypoints": {"default": "index.html"}
 }

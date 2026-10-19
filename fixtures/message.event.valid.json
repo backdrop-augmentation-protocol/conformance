@@ -1,8 +1,8 @@
 {
-  "bap": "0.1",
+  "protocol": {"name": "bap", "version": "0.1.0", "profile": "core"},
   "id": "m1",
   "kind": "event",
-  "type": "lifecycle.ready",
-  "source": "component",
-  "target": "host"
+  "timestamp": "2026-01-01T00:00:00Z",
+  "event": "lifecycle.ready",
+  "payload": {}
 }

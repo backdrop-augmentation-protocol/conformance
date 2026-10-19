@@ -8,11 +8,7 @@ Protocol conformance does not by itself imply Wallpaper Engine platform approval
 
 ## MVP development
 
-The initial suite owns a small local contract until the `spec` repository
-publishes machine-readable schemas. It covers manifest and message-envelope
-validation, Host/Component lifecycle transitions, fixture checks, and a JSON
-report. An adapter can turn a real implementation into the small conformance
-subject interface without depending on an unfinished SDK API.
+The suite consumes the machine-readable schemas from the public `spec` repository. In a checkout of the BAP monorepo it uses the sibling `spec` directory; in a standalone checkout `npm run spec:install` pins and caches the configured spec commit. `BAP_SPEC_DIR` can point to another verified spec checkout, and `BAP_SPEC_REF` selects the install commit. The runner validates the official Manifest, Message, and Error contracts, covers Host/Component/Companion roles, lifecycle transitions, fixture checks, and writes a JSON report including the spec source.
 
 ```sh
 npm install
