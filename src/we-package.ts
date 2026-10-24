@@ -1,5 +1,5 @@
 import { readFile, realpath, stat } from "node:fs/promises";
-import { extname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { createSpecValidators, validationErrors } from "./schemas.js";
 
 export interface PackageCheck { id: string; status: "passed" | "failed"; details?: string }
@@ -14,12 +14,12 @@ export async function checkWeWebPackage(directory: string): Promise<PackageCheck
     try { return JSON.parse(await readFile(join(root, name), "utf8")); }
     catch (error) { check(name, false, String(error)); return undefined; }
   };
-  const file = async (value: unknown, label: string): Promise<string | undefined> => {
+  const file = async (value: unknown, label: string, base = root): Promise<string | undefined> => {
     if (typeof value !== "string" || !value || isAbsolute(value) || value.startsWith("/") || value.includes("\\") || value.split("/").includes("..")) {
       check(label, false, "expected a relative package file path"); return undefined;
     }
     try {
-      const target = await realpath(resolve(root, value));
+      const target = await realpath(resolve(base, value));
       const offset = relative(root, target);
       if (!offset || offset === ".." || offset.startsWith(`..${sep}`) || isAbsolute(offset) || !(await stat(target)).isFile()) throw new Error("path is not a regular file inside the package");
       check(label, true); return target;
@@ -40,7 +40,7 @@ export async function checkWeWebPackage(directory: string): Promise<PackageCheck
     for (const match of html.matchAll(/<(?:script|link|img|video|audio|source)\b[^>]*?\b(?:src|href)\s*=\s*["']([^"']+)["']/gi)) {
       const value = match[1].split(/[?#]/)[0];
       if (/^(?:data:|https?:|blob:)/i.test(value) || !value) continue;
-      await file(value, `we-html-resource-${checks.length}`);
+      await file(value, `we-html-resource-${checks.length}`, dirname(entry));
     }
   }
 

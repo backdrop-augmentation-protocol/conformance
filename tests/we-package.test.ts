@@ -53,4 +53,16 @@ describe("WE Web Workshop distribution", () => {
       expect(failures).toContain("bap-embedded-self-contained-static");
     } finally { await rm(root, { recursive: true, force: true }); }
   });
+
+  it("resolves local HTML resources beside a nested WE entrypoint", async () => {
+    const root = await fixture({ file: "nested/index.html" });
+    try {
+      await mkdir(join(root, "nested"));
+      await writeFile(join(root, "nested", "index.html"), '<script src="./app.js"></script>');
+      await writeFile(join(root, "nested", "app.js"), "ok");
+      const projectOnly = await checkWeWebPackage(root);
+      expect(projectOnly.find((check) => check.id.startsWith("we-html-resource-"))?.status).toBe("passed");
+      expect(projectOnly.find((check) => check.id === "we-standalone-match")?.status).toBe("failed");
+    } finally { await rm(root, { recursive: true, force: true }); }
+  });
 });
