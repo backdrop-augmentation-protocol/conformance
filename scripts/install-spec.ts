@@ -8,9 +8,9 @@ import { dirname, join, resolve } from "node:path";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sibling = resolve(root, "..", "spec");
 const cache = join(root, ".bap-spec");
-const required = ["versions/0.1.0/schemas/common.schema.json", "versions/0.1.0/schemas/manifest.schema.json", "versions/0.1.0/schemas/message.schema.json", "versions/0.1.0/schemas/error.schema.json"];
+const required = ["versions/0.1.0/schemas/common.schema.json", "versions/0.1.0/schemas/manifest.schema.json", "versions/0.1.0/schemas/message.schema.json", "versions/0.1.0/schemas/error.schema.json", "profiles/we-web-workshop/project.schema.json"];
 const repository = "https://github.com/backdrop-augmentation-protocol/spec.git";
-const ref = process.env.BAP_SPEC_REF ?? "fb03d34cbea7aa84a038806cd9b681eed9b6fbca";
+const ref = process.env.BAP_SPEC_REF ?? "caaa6ad";
 const execFileAsync = promisify(execFile);
 
 async function hasSchemas(directory: string) {
@@ -33,6 +33,7 @@ if (await hasSchemas(sibling)) {
   await execFileAsync("git", ["-C", temporary, "checkout", "--quiet", ref]);
   await mkdir(cache, { recursive: true });
   await cp(join(temporary, "versions"), join(cache, "versions"), { recursive: true });
+  await cp(join(temporary, "profiles"), join(cache, "profiles"), { recursive: true });
   await rm(temporary, { recursive: true, force: true });
   await rm(archive, { force: true });
   if (!(await hasSchemas(cache))) throw new Error(`Installed spec ${ref} is missing required schemas`);

@@ -5,7 +5,7 @@
   "description": "MVP BAP protocol conformance fixtures and runner",
   "type": "module",
   "engines": { "node": ">=20" },
-  "scripts": { "spec:install": "tsx scripts/install-spec.ts", "test": "npm run spec:install && vitest run", "test:watch": "vitest", "conformance": "npm run spec:install && tsx src/runner.ts --report reports/conformance.json" },
+  "scripts": { "spec:install": "tsx scripts/install-spec.ts", "test": "npm run spec:install && vitest run", "test:watch": "vitest", "conformance": "npm run spec:install && tsx src/runner.ts --report reports/conformance.json", "check:we-package": "npm run spec:install && tsx src/check-we-package.ts" },
   "dependencies": { "ajv": "^8.17.1", "ajv-formats": "^3.0.1" },
   "devDependencies": { "@types/node": "^22.10.2", "tsx": "^4.19.2", "typescript": "^5.7.2", "vitest": "^2.1.8" }
 }

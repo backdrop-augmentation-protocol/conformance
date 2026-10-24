@@ -6,6 +6,14 @@ Automated conformance tests, fixtures, runners, and report formats for BAP Host,
 
 Protocol conformance does not by itself imply Wallpaper Engine platform approval, security audit approval, or content-quality approval.
 
+For Web wallpaper packages, `npm run check:we-package -- <directory>` checks the
+[WE Web/Workshop distribution profile](https://github.com/backdrop-augmentation-protocol/spec/blob/main/profiles/we-web-workshop/README.md).
+This check is optional during local-only development but required before a BAP
+WE Web wallpaper is first published or updated on Workshop. It reads the
+profile Schema from the pinned `spec` checkout, checks package
+entrypoints and preview paths, and validates a BAP Component Manifest when
+present. This is a static preflight, not an editor or platform approval test.
+
 ## MVP development
 
 The suite consumes the machine-readable schemas from the public `spec` repository. In a checkout of the BAP monorepo it uses the sibling `spec` directory; in a standalone checkout `npm run spec:install` pins and caches the configured spec commit. `BAP_SPEC_DIR` can point to another verified spec checkout, and `BAP_SPEC_REF` selects the install commit. The runner validates the official Manifest, Message, and Error contracts, covers Host/Component/Companion roles, lifecycle transitions, fixture checks, and writes a JSON report including the spec source.

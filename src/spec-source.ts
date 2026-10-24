@@ -20,3 +20,9 @@ export async function readSpecSchema(file: typeof requiredSchemas[number]): Prom
   const directory = await resolveSpecDirectory();
   return JSON.parse(await readFile(join(directory, file), "utf8")) as Record<string, unknown>;
 }
+
+export async function readWeProjectSchema(): Promise<Record<string, unknown>> {
+  const schemaDirectory = await resolveSpecDirectory();
+  const specRoot = resolve(schemaDirectory, "..", "..", "..");
+  return JSON.parse(await readFile(join(specRoot, "profiles", "we-web-workshop", "project.schema.json"), "utf8")) as Record<string, unknown>;
+}

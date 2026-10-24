@@ -10,19 +10,22 @@
 
 ## MVP 开发状态
 
-初始测试套件目前维护一份小型本地契约，直到 `spec` 仓库发布机器可读的
-Schema。当前覆盖：
+测试套件直接读取 `spec` 仓库的机器可读 Schema。当前覆盖：
 
 - Manifest 和消息信封校验；
 - Host/Component 生命周期转换；
 - Fixtures 检查；
 - JSON 报告生成。
 
-适配器可以将真实实现转换为测试所需的最小 Subject 接口，不依赖尚未完成的
-SDK API。
+WE Web 壁纸包可以运行 `npm run check:we-package -- <目录>`，按照
+[WE Web/Workshop 分发 Profile](https://github.com/backdrop-augmentation-protocol/spec/blob/main/profiles/we-web-workshop/README.zh-CN.md)
+检查项目元数据、入口、预览资源和 BAP 组件 Manifest。本地开发和调试阶段可不运行；
+首次发布到 Workshop 之前及已发布项目的每次更新，都必须运行。静态检查通过不代表
+编辑器或平台审核通过。
 
 ```sh
 npm install
 npm test
 npm run conformance
+npm run check:we-package -- <目录>
 ```
