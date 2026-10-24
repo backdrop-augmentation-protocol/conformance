@@ -10,7 +10,7 @@ const sibling = resolve(root, "..", "spec");
 const cache = join(root, ".bap-spec");
 const required = ["versions/0.1.0/schemas/common.schema.json", "versions/0.1.0/schemas/manifest.schema.json", "versions/0.1.0/schemas/message.schema.json", "versions/0.1.0/schemas/error.schema.json", "profiles/we-web-workshop/project.schema.json"];
 const repository = "https://github.com/backdrop-augmentation-protocol/spec.git";
-const ref = process.env.BAP_SPEC_REF ?? "caaa6ad";
+const ref = process.env.BAP_SPEC_REF ?? "48725f4";
 const execFileAsync = promisify(execFile);
 
 async function hasSchemas(directory: string) {

@@ -20,7 +20,7 @@ async function fixture(override: Record<string, unknown> = {}) {
 
 describe("WE Web Workshop distribution", () => {
   it("accepts a generated candidate and editor-normalized metadata", async () => {
-    for (const metadata of [{}, { tags: ["Nature"], visibility: "private", version: 2, workshopid: "123456", general: { properties: {} } }]) {
+    for (const metadata of [{}, { type: "Web", tags: ["Nature"], visibility: "private", version: 3, workshopid: "123456", workshopurl: "steam://url/CommunityFilePage/123456", general: { properties: {} } }]) {
       const root = await fixture(metadata);
       try { expect((await checkWeWebPackage(root)).filter((check) => check.status === "failed")).toEqual([]); }
       finally { await rm(root, { recursive: true, force: true }); }
