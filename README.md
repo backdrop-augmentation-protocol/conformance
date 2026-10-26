@@ -16,7 +16,7 @@ present. This is a static preflight, not an editor or platform approval test.
 
 ## MVP development
 
-The suite consumes the machine-readable schemas from the public `spec` repository. In a checkout of the BAP monorepo it uses the sibling `spec` directory; in a standalone checkout `npm run spec:install` pins and caches the configured spec commit. `BAP_SPEC_DIR` can point to another verified spec checkout, and `BAP_SPEC_REF` selects the install commit. The runner validates the official Manifest, Message, and Error contracts, covers Host/Component/Companion roles, lifecycle transitions, fixture checks, and writes a JSON report including the spec source.
+The suite consumes the machine-readable schemas from the public `spec` repository. In a checkout of the BAP monorepo it uses the sibling `spec` directory; in a standalone checkout `npm run spec:install` pins and caches the configured spec commit. `BAP_SPEC_DIR` can point to another verified spec checkout, and `BAP_SPEC_REF` selects the install commit. Unit tests cover the specified lifecycle state machine and schema fixtures. The `conformance` command currently writes a Core schema-fixture report for sample Host, Component, and Companion manifests and messages; it does not yet certify a running implementation.
 
 ```sh
 npm install

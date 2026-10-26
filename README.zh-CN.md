@@ -15,7 +15,7 @@
 - Manifest 和消息信封校验；
 - Host/Component 生命周期转换；
 - Fixtures 检查；
-- JSON 报告生成。
+- Core Schema 示例 Fixtures 的 JSON 报告生成；此报告尚不能证明运行中的实现符合协议。
 
 WE Web 壁纸包可以运行 `npm run check:we-package -- <目录>`，按照
 [WE Web/Workshop 分发 Profile](https://github.com/backdrop-augmentation-protocol/spec/blob/main/profiles/we-web-workshop/README.zh-CN.md)
