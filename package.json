@@ -1,6 +1,7 @@
 {
   "name": "@backdrop-augmentation-protocol/conformance",
   "version": "0.1.0",
+  "license": "MIT",
   "private": false,
   "description": "MVP BAP protocol conformance fixtures and runner",
   "publishConfig": { "access": "public" },
