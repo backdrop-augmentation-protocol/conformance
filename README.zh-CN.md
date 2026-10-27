@@ -5,6 +5,18 @@
 面向 BAP Host、Component、Companion 和组件包实现的一致性测试、Fixtures、
 测试运行器和报告格式。
 
+## 安装后的命令
+
+```sh
+npm install --save-dev @backdrop-augmentation-protocol/conformance
+npx bap-conformance --report reports/conformance.json
+npx bap-check-we-package <壁纸包目录> [更多目录]
+```
+
+安装后的命令使用随包附带、固定版本的 Core Schema 和 WE 分发 Profile，
+不需要相邻的源码仓库。`bap-conformance` 报告检查示例 Core Schema Fixtures，
+不能据此认定运行中的实现已通过一致性测试。
+
 协议一致性通过并不代表通过 Wallpaper Engine 平台审核、安全审计或内容
 质量审核。
 

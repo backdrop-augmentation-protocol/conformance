@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { checkWeWebPackage } from "./we-package.js";
 
 const directories = process.argv.slice(2);

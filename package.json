@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": false,
   "description": "MVP BAP protocol conformance fixtures and runner",
+  "publishConfig": { "access": "public" },
   "type": "module",
   "engines": { "node": ">=20" },
-  "scripts": { "spec:install": "tsx scripts/install-spec.ts", "test": "npm run spec:install && vitest run", "test:watch": "vitest", "conformance": "npm run spec:install && tsx src/runner.ts --report reports/conformance.json", "check:we-package": "npm run spec:install && tsx src/check-we-package.ts" },
+  "bin": { "bap-conformance": "./dist/runner.js", "bap-check-we-package": "./dist/check-we-package.js" },
+  "files": ["dist/", "spec-data/", "fixtures/", "README.md", "README.zh-CN.md"],
+  "scripts": { "spec:install": "tsx scripts/install-spec.ts", "build": "tsc -p tsconfig.build.json && node scripts/copy-spec.mjs", "prepack": "npm run spec:install && npm run build", "check:package": "node scripts/check-package.mjs", "test": "npm run spec:install && vitest run", "test:watch": "vitest", "conformance": "npm run spec:install && tsx src/runner.ts --report reports/conformance.json", "check:we-package": "npm run spec:install && tsx src/check-we-package.ts" },
   "dependencies": { "ajv": "^8.17.1", "ajv-formats": "^3.0.1" },
   "devDependencies": { "@types/node": "^22.10.2", "tsx": "^4.19.2", "typescript": "^5.7.2", "vitest": "^2.1.8" }
 }

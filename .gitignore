@@ -1,3 +1,5 @@
 node_modules/
 reports/
 .bap-spec/
+dist/
+spec-data/

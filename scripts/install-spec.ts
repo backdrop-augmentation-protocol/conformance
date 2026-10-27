@@ -10,7 +10,7 @@ const sibling = resolve(root, "..", "spec");
 const cache = join(root, ".bap-spec");
 const required = ["versions/0.1.0/schemas/common.schema.json", "versions/0.1.0/schemas/manifest.schema.json", "versions/0.1.0/schemas/message.schema.json", "versions/0.1.0/schemas/error.schema.json", "profiles/we-web-workshop/project.schema.json"];
 const repository = "https://github.com/backdrop-augmentation-protocol/spec.git";
-const ref = process.env.BAP_SPEC_REF ?? "ce53f534ea02b4d5f9784b30238221e9ac22e796";
+const ref = process.env.BAP_SPEC_REF ?? JSON.parse(await readFile(join(root, "scripts", "spec-ref.json"), "utf8")).commit;
 const refMarker = join(cache, ".source-ref");
 const execFileAsync = promisify(execFile);
 

@@ -4,6 +4,19 @@
 
 Automated conformance tests, fixtures, runners, and report formats for BAP Host, Component, Companion, and package implementations.
 
+## Installed commands
+
+```sh
+npm install --save-dev @backdrop-augmentation-protocol/conformance
+npx bap-conformance --report reports/conformance.json
+npx bap-check-we-package <package-directory> [more-directories]
+```
+
+The installed commands use the Core schemas and WE distribution Profile bundled
+from a pinned `spec` revision. They do not need a neighboring source checkout.
+The `bap-conformance` report checks sample Core schema fixtures; it does not
+certify a running implementation.
+
 Protocol conformance does not by itself imply Wallpaper Engine platform approval, security audit approval, or content-quality approval.
 
 For Web wallpaper packages, `npm run check:we-package -- <directory>` checks the

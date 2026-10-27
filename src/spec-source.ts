@@ -7,13 +7,13 @@ export const requiredSchemas = ["common.schema.json", "manifest.schema.json", "m
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 export async function resolveSpecDirectory(): Promise<string> {
-  const candidates = [process.env.BAP_SPEC_DIR, resolve(projectRoot, "..", "spec"), join(projectRoot, ".bap-spec")].filter(Boolean) as string[];
+  const candidates = [process.env.BAP_SPEC_DIR, resolve(projectRoot, "..", "spec"), join(projectRoot, ".bap-spec"), join(projectRoot, "spec-data")].filter(Boolean) as string[];
   for (const candidate of candidates) {
     for (const schemaRoot of [join(candidate, "schemas"), join(candidate, "versions", "0.1.0", "schemas")]) {
       if (existsSync(schemaRoot) && (await Promise.all(requiredSchemas.map((file) => access(join(schemaRoot, file)).then(() => true, () => false)))).every(Boolean)) return schemaRoot;
     }
   }
-  throw new Error("BAP spec is not installed. Run npm run spec:install or set BAP_SPEC_DIR to a spec checkout.");
+  throw new Error("BAP spec schemas are unavailable. Rebuild the package or set BAP_SPEC_DIR to a spec checkout.");
 }
 
 export async function readSpecSchema(file: typeof requiredSchemas[number]): Promise<Record<string, unknown>> {
