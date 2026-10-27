@@ -34,6 +34,8 @@ describe("Core lifecycle state machine", () => {
     expect(() => machine.apply("pause")).toThrow(/cannot pause from connected/);
     expect(machine.state).toBe("connected");
     machine.apply("initialize");
+    expect(() => machine.apply("stop")).toThrow(InvalidLifecycleStateError);
+    expect(machine.state).toBe("initialized");
     machine.apply("start");
     machine.apply("stop");
     expect(() => machine.apply("start")).toThrow(/cannot start from stopped/);
