@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, rm } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -10,7 +10,8 @@ const sibling = resolve(root, "..", "spec");
 const cache = join(root, ".bap-spec");
 const required = ["versions/0.1.0/schemas/common.schema.json", "versions/0.1.0/schemas/manifest.schema.json", "versions/0.1.0/schemas/message.schema.json", "versions/0.1.0/schemas/error.schema.json", "profiles/we-web-workshop/project.schema.json"];
 const repository = "https://github.com/backdrop-augmentation-protocol/spec.git";
-const ref = process.env.BAP_SPEC_REF ?? "48725f4";
+const ref = process.env.BAP_SPEC_REF ?? "ce53f534ea02b4d5f9784b30238221e9ac22e796";
+const refMarker = join(cache, ".source-ref");
 const execFileAsync = promisify(execFile);
 
 async function hasSchemas(directory: string) {
@@ -19,23 +20,23 @@ async function hasSchemas(directory: string) {
   }))).every(Boolean);
 }
 
+const cachedRef = await readFile(refMarker, "utf8").then((value) => value.trim(), () => null);
 if (await hasSchemas(sibling)) {
   process.stdout.write(`Using sibling spec repository: ${sibling}\n`);
   process.stdout.write(`Spec source ready: ${sibling}\n`);
-} else if (await hasSchemas(cache)) {
+} else if (cachedRef === ref && await hasSchemas(cache)) {
   process.stdout.write(`Spec source ready: ${cache}\n`);
 } else {
   if (existsSync(cache)) await rm(cache, { recursive: true, force: true });
   await mkdir(dirname(cache), { recursive: true });
   const temporary = join(root, `.spec-${process.pid}`);
-  const archive = join(root, `.spec-${process.pid}.tar`);
   await execFileAsync("git", ["clone", "--quiet", repository, temporary]);
   await execFileAsync("git", ["-C", temporary, "checkout", "--quiet", ref]);
   await mkdir(cache, { recursive: true });
   await cp(join(temporary, "versions"), join(cache, "versions"), { recursive: true });
   await cp(join(temporary, "profiles"), join(cache, "profiles"), { recursive: true });
+  await writeFile(refMarker, `${ref}\n`);
   await rm(temporary, { recursive: true, force: true });
-  await rm(archive, { force: true });
   if (!(await hasSchemas(cache))) throw new Error(`Installed spec ${ref} is missing required schemas`);
   process.stdout.write(`Installed spec ${ref} into ${cache}\n`);
 }
