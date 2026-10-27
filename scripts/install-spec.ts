@@ -7,12 +7,23 @@ import { dirname, join, resolve } from "node:path";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sibling = resolve(root, "..", "spec");
+const explicit = process.env.BAP_SPEC_DIR;
 const cache = join(root, ".bap-spec");
 const required = ["versions/0.1.0/schemas/common.schema.json", "versions/0.1.0/schemas/manifest.schema.json", "versions/0.1.0/schemas/message.schema.json", "versions/0.1.0/schemas/error.schema.json", "profiles/we-web-workshop/project.schema.json"];
 const repository = "https://github.com/backdrop-augmentation-protocol/spec.git";
 const ref = process.env.BAP_SPEC_REF ?? JSON.parse(await readFile(join(root, "scripts", "spec-ref.json"), "utf8")).commit;
 const refMarker = join(cache, ".source-ref");
 const execFileAsync = promisify(execFile);
+
+async function matchesPinnedCheckout(directory: string) {
+  try {
+    const [{ stdout: head }, { stdout: changes }] = await Promise.all([
+      execFileAsync("git", ["-C", directory, "rev-parse", "HEAD"]),
+      execFileAsync("git", ["-C", directory, "status", "--porcelain", "--", "versions/0.1.0", "profiles/we-web-workshop/project.schema.json"]),
+    ]);
+    return head.trim() === ref && changes.trim() === "";
+  } catch { return false; }
+}
 
 async function hasSchemas(directory: string) {
   return (await Promise.all(required.map(async (file) => {
@@ -21,9 +32,12 @@ async function hasSchemas(directory: string) {
 }
 
 const cachedRef = await readFile(refMarker, "utf8").then((value) => value.trim(), () => null);
-if (await hasSchemas(sibling)) {
-  process.stdout.write(`Using sibling spec repository: ${sibling}\n`);
-  process.stdout.write(`Spec source ready: ${sibling}\n`);
+let checkout;
+for (const directory of [explicit, sibling].filter((value): value is string => Boolean(value))) {
+  if (await hasSchemas(directory) && await matchesPinnedCheckout(directory)) { checkout = directory; break; }
+}
+if (checkout) {
+  process.stdout.write(`Spec source ready: ${checkout}\n`);
 } else if (cachedRef === ref && await hasSchemas(cache)) {
   process.stdout.write(`Spec source ready: ${cache}\n`);
 } else {

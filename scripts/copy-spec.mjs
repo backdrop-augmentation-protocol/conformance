@@ -4,8 +4,9 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const ref = JSON.parse(await readFile(join(root, 'scripts', 'spec-ref.json'), 'utf8')).commit;
+const ref = process.env.BAP_SPEC_REF ?? JSON.parse(await readFile(join(root, 'scripts', 'spec-ref.json'), 'utf8')).commit;
 const sibling = resolve(root, '..', 'spec');
+const explicit = process.env.BAP_SPEC_DIR;
 const cache = join(root, '.bap-spec');
 const target = join(root, 'spec-data');
 
@@ -14,10 +15,15 @@ function git(...args) {
 }
 
 let source;
-try {
-  if (git('-C', sibling, 'rev-parse', 'HEAD') === ref &&
-      !git('-C', sibling, 'status', '--porcelain', '--', 'versions/0.1.0', 'profiles/we-web-workshop/project.schema.json')) source = sibling;
-} catch { /* A standalone checkout has no sibling spec repository. */ }
+for (const directory of [explicit, sibling].filter(Boolean)) {
+  try {
+    if (git('-C', directory, 'rev-parse', 'HEAD') === ref &&
+        !git('-C', directory, 'status', '--porcelain', '--', 'versions/0.1.0', 'profiles/we-web-workshop/project.schema.json')) {
+      source = directory;
+      break;
+    }
+  } catch { /* The candidate is not a matching clean spec checkout. */ }
+}
 if (!source && await readFile(join(cache, '.source-ref'), 'utf8').then(value => value.trim() === ref, () => false)) source = cache;
 if (!source) throw new Error(`Pinned spec ${ref} is unavailable; run npm run spec:install in a standalone checkout`);
 
