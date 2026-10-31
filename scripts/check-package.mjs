@@ -13,6 +13,8 @@ for (const path of [
   'spec-data/versions/0.1.0/schemas/manifest.schema.json',
   'spec-data/versions/0.1.0/schemas/message.schema.json',
   'spec-data/profiles/we-web-workshop/project.schema.json',
+  'spec-data/drafts/0.2.0/index.json',
+  'spec-data/drafts/0.2.0/schemas/preset-snapshot.schema.json',
 ]) {
   if (!paths.has(path)) throw new Error(`Missing bundled spec: ${path}`);
 }

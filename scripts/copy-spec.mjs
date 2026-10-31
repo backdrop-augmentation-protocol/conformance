@@ -18,7 +18,7 @@ let source;
 for (const directory of [explicit, sibling].filter(Boolean)) {
   try {
     if (git('-C', directory, 'rev-parse', 'HEAD') === ref &&
-        !git('-C', directory, 'status', '--porcelain', '--', 'versions/0.1.0', 'profiles/we-web-workshop/project.schema.json')) {
+        !git('-C', directory, 'status', '--porcelain', '--', 'versions/0.1.0', 'profiles/we-web-workshop/project.schema.json', 'drafts/0.2.0')) {
       source = directory;
       break;
     }
@@ -31,6 +31,7 @@ const required = [
   'versions/0.1.0/schemas',
   'versions/0.1.0/fixtures',
   'profiles/we-web-workshop/project.schema.json',
+  'drafts/0.2.0',
 ];
 for (const path of required) await stat(join(source, path)).catch(() => {
   throw new Error(`Pinned spec is missing ${path}`);

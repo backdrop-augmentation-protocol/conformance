@@ -9,7 +9,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sibling = resolve(root, "..", "spec");
 const explicit = process.env.BAP_SPEC_DIR;
 const cache = join(root, ".bap-spec");
-const required = ["versions/0.1.0/schemas/common.schema.json", "versions/0.1.0/schemas/manifest.schema.json", "versions/0.1.0/schemas/message.schema.json", "versions/0.1.0/schemas/error.schema.json", "profiles/we-web-workshop/project.schema.json"];
+const required = ["versions/0.1.0/schemas/common.schema.json", "versions/0.1.0/schemas/manifest.schema.json", "versions/0.1.0/schemas/message.schema.json", "versions/0.1.0/schemas/error.schema.json", "profiles/we-web-workshop/project.schema.json", "drafts/0.2.0/index.json", "drafts/0.2.0/schemas/preset-snapshot.schema.json"];
 const repository = "https://github.com/backdrop-augmentation-protocol/spec.git";
 const ref = process.env.BAP_SPEC_REF ?? JSON.parse(await readFile(join(root, "scripts", "spec-ref.json"), "utf8")).commit;
 const refMarker = join(cache, ".source-ref");
@@ -19,7 +19,7 @@ async function matchesPinnedCheckout(directory: string) {
   try {
     const [{ stdout: head }, { stdout: changes }] = await Promise.all([
       execFileAsync("git", ["-C", directory, "rev-parse", "HEAD"]),
-      execFileAsync("git", ["-C", directory, "status", "--porcelain", "--", "versions/0.1.0", "profiles/we-web-workshop/project.schema.json"]),
+      execFileAsync("git", ["-C", directory, "status", "--porcelain", "--", "versions/0.1.0", "profiles/we-web-workshop/project.schema.json", "drafts/0.2.0"]),
     ]);
     return head.trim() === ref && changes.trim() === "";
   } catch { return false; }
@@ -49,6 +49,7 @@ if (checkout) {
   await mkdir(cache, { recursive: true });
   await cp(join(temporary, "versions"), join(cache, "versions"), { recursive: true });
   await cp(join(temporary, "profiles"), join(cache, "profiles"), { recursive: true });
+  await cp(join(temporary, "drafts"), join(cache, "drafts"), { recursive: true });
   await writeFile(refMarker, `${ref}\n`);
   await rm(temporary, { recursive: true, force: true });
   if (!(await hasSchemas(cache))) throw new Error(`Installed spec ${ref} is missing required schemas`);
