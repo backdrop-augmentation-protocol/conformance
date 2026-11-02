@@ -24,8 +24,11 @@ describe("BAP 0.2.0 desktop composition draft", () => {
     expect(validators["extension-selection.schema.json"](await fixture("extension-selection.json"))).toBe(true);
     expect(validators["preset-snapshot.schema.json"](await fixture("preset-multiple-instances.json"))).toBe(true);
     expect(validators["preset-snapshot.schema.json"](await fixture("preset-snapshot.json"))).toBe(true);
-    expect(validators["component-properties.schema.json"]({ schemaVersion: "0.1.0", properties: { label: { type: "string", default: "Clock" }, format: { type: "enum", default: "24h", options: ["12h", "24h"] } } })).toBe(true);
-    expect(validators["component-properties.schema.json"]({ schemaVersion: "0.1.0", properties: { format: { type: "enum", default: "24h" } } })).toBe(false);
+    expect(validators["component-properties.schema.json"]({ schemaVersion: "0.1.0", properties: {
+      enabled: { type: "bool", value: true, text: "Enabled" },
+      format: { type: "combo", value: "24h", options: [{ value: "12h", label: "12-hour" }, { value: "24h", label: "24-hour" }] },
+    } })).toBe(true);
+    expect(validators["component-properties.schema.json"]({ schemaVersion: "0.1.0", properties: { format: { type: "combo", value: "24h" } } })).toBe(false);
   });
 
   it("selects only exact common extension versions and ignores unknown offers", () => {
