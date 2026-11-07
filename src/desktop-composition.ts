@@ -46,7 +46,7 @@ export function validatePresetSnapshot(value: unknown, schema: ValidateFunction)
   return true;
 }
 
-export type SnapshotRevisionDecision = "apply" | "idempotent" | "stale" | "conflict";
+export type SnapshotRevisionDecision = "apply" | "idempotent" | "stale";
 
 function canonicalJson(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
@@ -59,10 +59,10 @@ function canonicalJson(value: unknown): string {
 
 export function compareSnapshotRevision(current: PresetSnapshot | undefined, incoming: PresetSnapshot): SnapshotRevisionDecision {
   if (!current) return "apply";
-  if (current.presetId !== incoming.presetId) return "conflict";
+  if (current.presetId !== incoming.presetId) return "apply";
   if (incoming.revision < current.revision) return "stale";
   if (incoming.revision > current.revision) return "apply";
-  return canonicalJson(current) === canonicalJson(incoming) ? "idempotent" : "conflict";
+  return canonicalJson(current) === canonicalJson(incoming) ? "idempotent" : "apply";
 }
 
 export function effectiveVisibility(state: { enabled: boolean; userVisible: boolean; sceneAllowed: boolean; runtimeReady: boolean }): boolean {
