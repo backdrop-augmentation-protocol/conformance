@@ -24,6 +24,12 @@ describe("BAP 0.2.0 desktop composition draft", () => {
     expect(validators["extension-selection.schema.json"](await fixture("extension-selection.json"))).toBe(true);
     expect(validators["preset-snapshot.schema.json"](await fixture("preset-multiple-instances.json"))).toBe(true);
     expect(validators["preset-snapshot.schema.json"](await fixture("preset-snapshot.json"))).toBe(true);
+    const invalidStatus = await fixture("preset-snapshot.json");
+    invalidStatus.instances[0].status = "unrecognized";
+    expect(validators["preset-snapshot.schema.json"](invalidStatus)).toBe(false);
+    const missingConfigRevision = await fixture("preset-snapshot.json");
+    delete missingConfigRevision.instances[0].configRevision;
+    expect(validators["preset-snapshot.schema.json"](missingConfigRevision)).toBe(false);
     expect(validators["component-properties.schema.json"]({ schemaVersion: "0.1.0", properties: {
       enabled: { type: "bool", value: true, text: "Enabled" },
       format: { type: "combo", value: "24h", options: [{ value: "12h", label: "12-hour" }, { value: "24h", label: "24-hour" }] },
@@ -61,22 +67,22 @@ describe("BAP 0.2.0 desktop composition draft", () => {
     expect(validatePresetSnapshot(mismatch, schema)).toBe(false);
   });
 
-  it("rejects stale/conflicting revisions and idempotently accepts an identical revision", async () => {
+  it("rejects stale revisions while refreshing equal revisions and switching preset streams", async () => {
     const validators = await createCompositionDraftValidators();
     const current = await fixture("preset-multiple-instances.json") as PresetSnapshot;
     const same = structuredClone(current);
     const reordered = Object.fromEntries(Object.entries(current).reverse()) as PresetSnapshot;
     const newer = { ...structuredClone(current), revision: current.revision + 1 };
     const stale = { ...structuredClone(current), revision: current.revision - 1 };
-    const sameRevisionConflict = { ...structuredClone(current), layoutMode: "grid" as const };
+    const derivedRefresh = { ...structuredClone(current), instances: current.instances.map(instance => ({ ...instance, status: "unavailable" })) };
     const otherPreset = { ...structuredClone(current), presetId: "other" };
     expect(validatePresetSnapshot(current, validators["preset-snapshot.schema.json"])).toBe(true);
     expect(compareSnapshotRevision(current, same)).toBe("idempotent");
     expect(compareSnapshotRevision(current, reordered)).toBe("idempotent");
     expect(compareSnapshotRevision(current, newer)).toBe("apply");
     expect(compareSnapshotRevision(current, stale)).toBe("stale");
-    expect(compareSnapshotRevision(current, sameRevisionConflict)).toBe("conflict");
-    expect(compareSnapshotRevision(current, otherPreset)).toBe("conflict");
+    expect(compareSnapshotRevision(current, derivedRefresh)).toBe("apply");
+    expect(compareSnapshotRevision(current, otherPreset)).toBe("apply");
   });
 
   it("keeps visibility independent from lifecycle by requiring every presentation gate", () => {
