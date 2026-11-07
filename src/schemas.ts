@@ -3,7 +3,7 @@ import addFormatsModule from "ajv-formats";
 import { readCompositionDraftSchema, readSpecSchema, readWeProjectSchema } from "./spec-source.js";
 
 export interface SpecValidators { manifest: ValidateFunction; message: ValidateFunction; error: ValidateFunction; weProject: ValidateFunction; source: string; }
-export const compositionDraftSchemaFiles = ["extension-offer.schema.json", "extension-selection.schema.json", "component-instance.schema.json", "layout.schema.json", "component-properties.schema.json", "component-localization.schema.json", "preset-snapshot.schema.json"] as const;
+export const compositionDraftSchemaFiles = ["extension-offer.schema.json", "extension-selection.schema.json", "component-instance.schema.json", "layout.schema.json", "component-properties.schema.json", "component-localization.schema.json", "preset-snapshot.schema.json", "presentation-scene-changed.schema.json"] as const;
 export type CompositionDraftSchemaFile = typeof compositionDraftSchemaFiles[number];
 export type CompositionDraftValidators = Record<CompositionDraftSchemaFile, ValidateFunction>;
 const Ajv2020 = Ajv2020Module as unknown as new (options?: object) => { addSchema(schema: object): void; compile(schema: object): ValidateFunction };
