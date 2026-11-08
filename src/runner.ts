@@ -33,10 +33,14 @@ export async function checkDesktopCompositionDraft() {
   const selection = await readDraftFixture("extension-selection.json");
   const manual = await readDraftFixture("preset-multiple-instances.json") as PresetSnapshot;
   const grid = await readDraftFixture("preset-snapshot.json") as PresetSnapshot;
+  const singleInstanceMetadata = await readDraftFixture("component-metadata-single-instance.json");
   check("draft-extension-offer", validators["extension-offer.schema.json"](offer), validationErrors(validators["extension-offer.schema.json"]).join("; "));
   check("draft-extension-selection", validators["extension-selection.schema.json"](selection), validationErrors(validators["extension-selection.schema.json"]).join("; "));
   check("draft-manual-preset", validatePresetSnapshot(manual, validators["preset-snapshot.schema.json"]));
   check("draft-grid-preset", validatePresetSnapshot(grid, validators["preset-snapshot.schema.json"]));
+  check("draft-single-instance-component-metadata", validators["component-metadata.schema.json"](singleInstanceMetadata), validationErrors(validators["component-metadata.schema.json"]).join("; "));
+  check("draft-unlimited-component-metadata", validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0" }));
+  check("draft-invalid-component-instance-limit-rejected", !validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0", maxInstances: 0 }));
 
   const common = negotiateExtensions(offer, [{ id: "org.bap.composition", versions: ["0.1.0"] }]);
   check("draft-exact-extension-intersection", common.length === 1 && common[0].id === "org.bap.composition" && common[0].version === "0.1.0");

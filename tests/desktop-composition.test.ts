@@ -35,6 +35,10 @@ describe("BAP 0.2.0 desktop composition draft", () => {
       format: { type: "combo", value: "24h", options: [{ value: "12h", label: "12-hour" }, { value: "24h", label: "24-hour" }] },
     } })).toBe(true);
     expect(validators["component-properties.schema.json"]({ schemaVersion: "0.1.0", properties: { format: { type: "combo", value: "24h" } } })).toBe(false);
+    expect(validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0" })).toBe(true);
+    expect(validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0", maxInstances: 1 })).toBe(true);
+    expect(validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0", maxInstances: 0 })).toBe(false);
+    expect(validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0", maxInstances: 1.5 })).toBe(false);
     const localization = await fixture("component-localization.json");
     expect(validators["component-localization.schema.json"](localization)).toBe(true);
     expect(validators["component-localization.schema.json"]({ schemaVersion: "0.1.0", properties: { unknown: {} } })).toBe(false);
