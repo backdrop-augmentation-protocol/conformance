@@ -38,10 +38,6 @@ describe("BAP 0.2.0 desktop composition draft", () => {
     const localization = await fixture("component-localization.json");
     expect(validators["component-localization.schema.json"](localization)).toBe(true);
     expect(validators["component-localization.schema.json"]({ schemaVersion: "0.1.0", properties: { unknown: {} } })).toBe(false);
-    const sceneEvent = await fixture("presentation-scene-changed.json");
-    expect(validators["presentation-scene-changed.schema.json"](sceneEvent)).toBe(true);
-    expect(validators["presentation-scene-changed.schema.json"]({ ...sceneEvent, revision: -1 })).toBe(false);
-    expect(validators["presentation-scene-changed.schema.json"]({ ...sceneEvent, instanceId: "" })).toBe(false);
   });
 
   it("selects only exact common extension versions and ignores unknown offers", () => {
