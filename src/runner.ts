@@ -52,7 +52,10 @@ export async function checkDesktopCompositionDraft() {
   check("draft-layout-mode-mismatch-rejected", !validatePresetSnapshot(mismatch, validators["preset-snapshot.schema.json"]));
   check("draft-snapshot-revision-idempotency", compareSnapshotRevision(manual, structuredClone(manual)) === "idempotent");
   check("draft-stale-snapshot-rejected", compareSnapshotRevision(manual, { ...structuredClone(manual), revision: manual.revision - 1 }) === "stale");
-  check("draft-visibility-gates", !effectiveVisibility({ enabled: true, userVisible: true, sceneAllowed: false, runtimeReady: true }));
+  check("draft-effective-visibility", effectiveVisibility({ enabled: true, userVisible: true, runtimeReady: true }));
+  check("draft-visibility-disabled", !effectiveVisibility({ enabled: false, userVisible: true, runtimeReady: true }));
+  check("draft-visibility-user-hidden", !effectiveVisibility({ enabled: true, userVisible: false, runtimeReady: true }));
+  check("draft-visibility-not-ready", !effectiveVisibility({ enabled: true, userVisible: true, runtimeReady: false }));
   return checks;
 }
 

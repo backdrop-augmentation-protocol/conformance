@@ -89,8 +89,8 @@ describe("BAP 0.2.0 desktop composition draft", () => {
     expect(compareSnapshotRevision(current, otherPreset)).toBe("apply");
   });
 
-  it("keeps visibility independent from lifecycle by requiring every presentation gate", () => {
-    const ready = { enabled: true, userVisible: true, sceneAllowed: true, runtimeReady: true };
+  it("computes visibility from composition, user visibility, and runtime readiness only", () => {
+    const ready = { enabled: true, userVisible: true, runtimeReady: true };
     expect(effectiveVisibility(ready)).toBe(true);
     for (const key of Object.keys(ready) as Array<keyof typeof ready>)
       expect(effectiveVisibility({ ...ready, [key]: false })).toBe(false);

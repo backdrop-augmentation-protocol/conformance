@@ -65,6 +65,6 @@ export function compareSnapshotRevision(current: PresetSnapshot | undefined, inc
   return canonicalJson(current) === canonicalJson(incoming) ? "idempotent" : "apply";
 }
 
-export function effectiveVisibility(state: { enabled: boolean; userVisible: boolean; sceneAllowed: boolean; runtimeReady: boolean }): boolean {
-  return state.enabled && state.userVisible && state.sceneAllowed && state.runtimeReady;
+export function effectiveVisibility(state: { enabled: boolean; userVisible: boolean; runtimeReady: boolean }): boolean {
+  return state.enabled && state.userVisible && state.runtimeReady;
 }
