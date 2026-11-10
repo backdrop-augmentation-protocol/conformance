@@ -9,17 +9,17 @@ import {
   type ExtensionOffer,
   type PresetSnapshot,
 } from "../src/desktop-composition.js";
-import { createCompositionDraftValidators } from "../src/schemas.js";
-import { resolveCompositionDraftDirectory } from "../src/spec-source.js";
+import { createCompositionValidators } from "../src/schemas.js";
+import { resolveCompositionDirectory } from "../src/spec-source.js";
 
 async function fixture(name: string): Promise<any> {
-  const root = await resolveCompositionDraftDirectory();
+  const root = await resolveCompositionDirectory();
   return JSON.parse(await readFile(join(root, "fixtures", name), "utf8"));
 }
 
-describe("BAP 0.2.0 desktop composition draft", () => {
+describe("BAP 0.2.0 desktop composition specification", () => {
   it("validates the extension offers, selection, and preset snapshot fixtures", async () => {
-    const validators = await createCompositionDraftValidators();
+    const validators = await createCompositionValidators();
     expect(validators["extension-offer.schema.json"](await fixture("host-extension-offer.json"))).toBe(true);
     expect(validators["extension-selection.schema.json"](await fixture("extension-selection.json"))).toBe(true);
     expect(validators["preset-snapshot.schema.json"](await fixture("preset-multiple-instances.json"))).toBe(true);
@@ -56,7 +56,7 @@ describe("BAP 0.2.0 desktop composition draft", () => {
   });
 
   it("allows repeated component IDs but rejects repeated instance IDs and layout-mode mismatches", async () => {
-    const validators = await createCompositionDraftValidators();
+    const validators = await createCompositionValidators();
     const schema = validators["preset-snapshot.schema.json"];
     const snapshot = await fixture("preset-multiple-instances.json") as PresetSnapshot;
     expect(snapshot.instances[0]).toMatchObject({ componentId: snapshot.instances[1].componentId });
@@ -72,7 +72,7 @@ describe("BAP 0.2.0 desktop composition draft", () => {
   });
 
   it("rejects stale revisions while refreshing equal revisions and switching preset streams", async () => {
-    const validators = await createCompositionDraftValidators();
+    const validators = await createCompositionValidators();
     const current = await fixture("preset-multiple-instances.json") as PresetSnapshot;
     const same = structuredClone(current);
     const reordered = Object.fromEntries(Object.entries(current).reverse()) as PresetSnapshot;

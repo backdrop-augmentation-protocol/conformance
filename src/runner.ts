@@ -2,8 +2,8 @@
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname, join, resolve } from "node:path";
 import { compareSnapshotRevision, effectiveVisibility, negotiateExtensions, validatePresetSnapshot, type ExtensionOffer, type PresetSnapshot } from "./desktop-composition.js";
-import { createCompositionDraftValidators, createSpecValidators, validationErrors } from "./schemas.js";
-import { resolveCompositionDraftDirectory, resolveSpecDirectory } from "./spec-source.js";
+import { createCompositionValidators, createSpecValidators, validationErrors } from "./schemas.js";
+import { resolveCompositionDirectory, resolveSpecDirectory } from "./spec-source.js";
 import type { ConformanceReport } from "./types.js";
 
 export async function checkFixtures(fixtures: { manifests: unknown[]; messages: unknown[] }) {
@@ -19,43 +19,43 @@ export async function checkFixtures(fixtures: { manifests: unknown[]; messages: 
   }
   return checks;
 }
-async function readDraftFixture(name: string): Promise<any> {
-  const draft = await resolveCompositionDraftDirectory();
-  return JSON.parse(await readFile(join(draft, "fixtures", name), "utf8"));
+async function readCompositionFixture(name: string): Promise<any> {
+  const release = await resolveCompositionDirectory();
+  return JSON.parse(await readFile(join(release, "fixtures", name), "utf8"));
 }
 
-export async function checkDesktopCompositionDraft() {
-  const validators = await createCompositionDraftValidators();
+export async function checkDesktopComposition() {
+  const validators = await createCompositionValidators();
   const checks: ConformanceReport["checks"] = [];
-  const check = (id: string, passed: boolean, details?: string) => checks.push({ id, status: passed ? "passed" : "failed", details: passed ? undefined : details ?? "draft contract check failed" });
+  const check = (id: string, passed: boolean, details?: string) => checks.push({ id, status: passed ? "passed" : "failed", details: passed ? undefined : details ?? "specification contract check failed" });
 
-  const offer = await readDraftFixture("host-extension-offer.json") as ExtensionOffer[];
-  const selection = await readDraftFixture("extension-selection.json");
-  const manual = await readDraftFixture("preset-multiple-instances.json") as PresetSnapshot;
-  const grid = await readDraftFixture("preset-snapshot.json") as PresetSnapshot;
-  const singleInstanceMetadata = await readDraftFixture("component-metadata-single-instance.json");
-  check("draft-extension-offer", validators["extension-offer.schema.json"](offer), validationErrors(validators["extension-offer.schema.json"]).join("; "));
-  check("draft-extension-selection", validators["extension-selection.schema.json"](selection), validationErrors(validators["extension-selection.schema.json"]).join("; "));
-  check("draft-manual-preset", validatePresetSnapshot(manual, validators["preset-snapshot.schema.json"]));
-  check("draft-grid-preset", validatePresetSnapshot(grid, validators["preset-snapshot.schema.json"]));
-  check("draft-single-instance-component-metadata", validators["component-metadata.schema.json"](singleInstanceMetadata), validationErrors(validators["component-metadata.schema.json"]).join("; "));
-  check("draft-unlimited-component-metadata", validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0" }));
-  check("draft-invalid-component-instance-limit-rejected", !validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0", maxInstances: 0 }));
+  const offer = await readCompositionFixture("host-extension-offer.json") as ExtensionOffer[];
+  const selection = await readCompositionFixture("extension-selection.json");
+  const manual = await readCompositionFixture("preset-multiple-instances.json") as PresetSnapshot;
+  const grid = await readCompositionFixture("preset-snapshot.json") as PresetSnapshot;
+  const singleInstanceMetadata = await readCompositionFixture("component-metadata-single-instance.json");
+  check("extension-offer", validators["extension-offer.schema.json"](offer), validationErrors(validators["extension-offer.schema.json"]).join("; "));
+  check("extension-selection", validators["extension-selection.schema.json"](selection), validationErrors(validators["extension-selection.schema.json"]).join("; "));
+  check("manual-preset", validatePresetSnapshot(manual, validators["preset-snapshot.schema.json"]));
+  check("grid-preset", validatePresetSnapshot(grid, validators["preset-snapshot.schema.json"]));
+  check("single-instance-component-metadata", validators["component-metadata.schema.json"](singleInstanceMetadata), validationErrors(validators["component-metadata.schema.json"]).join("; "));
+  check("unlimited-component-metadata", validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0" }));
+  check("invalid-component-instance-limit-rejected", !validators["component-metadata.schema.json"]({ schemaVersion: "0.1.0", maxInstances: 0 }));
 
   const common = negotiateExtensions(offer, [{ id: "org.bap.composition", versions: ["0.1.0"] }]);
-  check("draft-exact-extension-intersection", common.length === 1 && common[0].id === "org.bap.composition" && common[0].version === "0.1.0");
+  check("exact-extension-intersection", common.length === 1 && common[0].id === "org.bap.composition" && common[0].version === "0.1.0");
   const duplicate = structuredClone(manual);
   duplicate.instances[1].instanceId = duplicate.instances[0].instanceId;
-  check("draft-duplicate-instance-rejected", !validatePresetSnapshot(duplicate, validators["preset-snapshot.schema.json"]));
+  check("duplicate-instance-rejected", !validatePresetSnapshot(duplicate, validators["preset-snapshot.schema.json"]));
   const mismatch = structuredClone(manual);
   mismatch.instances[1].layout.mode = "automatic";
-  check("draft-layout-mode-mismatch-rejected", !validatePresetSnapshot(mismatch, validators["preset-snapshot.schema.json"]));
-  check("draft-snapshot-revision-idempotency", compareSnapshotRevision(manual, structuredClone(manual)) === "idempotent");
-  check("draft-stale-snapshot-rejected", compareSnapshotRevision(manual, { ...structuredClone(manual), revision: manual.revision - 1 }) === "stale");
-  check("draft-effective-visibility", effectiveVisibility({ enabled: true, userVisible: true, runtimeReady: true }));
-  check("draft-visibility-disabled", !effectiveVisibility({ enabled: false, userVisible: true, runtimeReady: true }));
-  check("draft-visibility-user-hidden", !effectiveVisibility({ enabled: true, userVisible: false, runtimeReady: true }));
-  check("draft-visibility-not-ready", !effectiveVisibility({ enabled: true, userVisible: true, runtimeReady: false }));
+  check("layout-mode-mismatch-rejected", !validatePresetSnapshot(mismatch, validators["preset-snapshot.schema.json"]));
+  check("snapshot-revision-idempotency", compareSnapshotRevision(manual, structuredClone(manual)) === "idempotent");
+  check("stale-snapshot-rejected", compareSnapshotRevision(manual, { ...structuredClone(manual), revision: manual.revision - 1 }) === "stale");
+  check("effective-visibility", effectiveVisibility({ enabled: true, userVisible: true, runtimeReady: true }));
+  check("visibility-disabled", !effectiveVisibility({ enabled: false, userVisible: true, runtimeReady: true }));
+  check("visibility-user-hidden", !effectiveVisibility({ enabled: true, userVisible: false, runtimeReady: true }));
+  check("visibility-not-ready", !effectiveVisibility({ enabled: true, userVisible: true, runtimeReady: false }));
   return checks;
 }
 
@@ -81,14 +81,14 @@ if (["runner.ts", "runner.js"].includes(basename(process.argv[1] ?? ""))) {
       { protocol: { name: "bap", version: "0.1.0", profile: "core" }, kind: "response", id: "response-1", correlationId: "request-1", timestamp: new Date().toISOString(), ok: false, error: { code: "INVALID_STATE", message: "The component is not ready" } },
     ],
   });
-  const checks = [...coreChecks, ...await checkDesktopCompositionDraft()];
+  const checks = [...coreChecks, ...await checkDesktopComposition()];
   const coreSource = await resolveSpecDirectory();
-  const draftSource = await resolveCompositionDraftDirectory();
+  const compositionSource = await resolveCompositionDirectory();
   const report: ConformanceReport = {
     protocol: "bap",
     version: "0.1.0",
-    suite: "core-plus-desktop-composition-draft",
-    specSource: `${coreSource}; draft ${draftSource}`,
+    suite: "core-plus-desktop-composition",
+    specSource: `${coreSource}; bundle ${compositionSource}`,
     startedAt,
     finishedAt: new Date().toISOString(),
     passed: checks.filter((entry) => entry.status === "passed").length,

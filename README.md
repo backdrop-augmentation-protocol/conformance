@@ -12,11 +12,11 @@ npx bap-conformance --report reports/conformance.json
 npx bap-check-we-package <package-directory> [more-directories]
 ```
 
-The installed commands use the Core schemas and WE distribution Profile bundled
-from a pinned `spec` revision. They do not need a neighboring source checkout.
-The `bap-conformance` report checks sample Core schema fixtures and explicitly
-draft BAP 0.2.0 desktop-composition fixtures; draft checks do not certify frozen
-protocol compatibility or a running implementation.
+The installed commands use the Core 0.1.0 schemas, the BAP 0.2.0 extension
+schemas and fixtures, and the WE distribution Profile bundled from a pinned
+`spec` revision. They do not need a neighboring source checkout. The
+`bap-conformance` report checks the machine-readable contracts and fixtures; it
+does not certify a running implementation.
 
 Protocol conformance does not by itself imply Wallpaper Engine platform approval, security audit approval, or content-quality approval.
 
@@ -30,7 +30,7 @@ present. This is a static preflight, not an editor or platform approval test.
 
 ## MVP development
 
-The suite consumes the machine-readable schemas from the public `spec` repository. In a checkout of the BAP monorepo it uses the sibling `spec` directory; in a standalone checkout `npm run spec:install` pins and caches the configured spec commit. `BAP_SPEC_DIR` can point to another verified spec checkout, and `BAP_SPEC_REF` selects the install commit. Unit tests cover the specified lifecycle state machine and Core fixtures. The `conformance` command also runs explicitly draft desktop-composition contract checks; it does not certify a running implementation.
+The suite consumes the machine-readable schemas from the public `spec` repository. In a checkout of the BAP monorepo it uses the sibling `spec` directory; in a standalone checkout `npm run spec:install` pins and caches the configured spec commit. `BAP_SPEC_DIR` can point to another verified spec checkout, and `BAP_SPEC_REF` selects the install commit. Unit tests cover the specified lifecycle state machine, Core fixtures, and BAP 0.2.0 desktop-composition contracts. The `conformance` command does not certify a running implementation.
 
 ```sh
 npm install

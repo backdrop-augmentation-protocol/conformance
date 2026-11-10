@@ -27,16 +27,16 @@ export async function readWeProjectSchema(): Promise<Record<string, unknown>> {
   return JSON.parse(await readFile(join(specRoot, "profiles", "we-web-workshop", "project.schema.json"), "utf8")) as Record<string, unknown>;
 }
 
-export async function resolveCompositionDraftDirectory(): Promise<string> {
+export async function resolveCompositionDirectory(): Promise<string> {
   const candidates = [process.env.BAP_SPEC_DIR, resolve(projectRoot, "..", "spec"), join(projectRoot, ".bap-spec"), join(projectRoot, "spec-data")].filter(Boolean) as string[];
   for (const candidate of candidates) {
-    const draftDirectory = join(candidate, "drafts", "0.2.0");
-    try { await access(join(draftDirectory, "index.json")); return draftDirectory; } catch { /* try the next spec source */ }
+    const releaseDirectory = join(candidate, "versions", "0.2.0");
+    try { await access(join(releaseDirectory, "index.json")); return releaseDirectory; } catch { /* try the next spec source */ }
   }
-  throw new Error("BAP 0.2.0 draft is unavailable. Reinstall the pinned spec source or set BAP_SPEC_DIR to a spec checkout.");
+  throw new Error("BAP spec bundle 0.2.0 is unavailable. Reinstall the pinned spec source or set BAP_SPEC_DIR to a spec checkout.");
 }
 
-export async function readCompositionDraftSchema(file: string): Promise<Record<string, unknown>> {
-  const draftDirectory = await resolveCompositionDraftDirectory();
-  return JSON.parse(await readFile(join(draftDirectory, "schemas", file), "utf8")) as Record<string, unknown>;
+export async function readCompositionSchema(file: string): Promise<Record<string, unknown>> {
+  const releaseDirectory = await resolveCompositionDirectory();
+  return JSON.parse(await readFile(join(releaseDirectory, "schemas", file), "utf8")) as Record<string, unknown>;
 }
